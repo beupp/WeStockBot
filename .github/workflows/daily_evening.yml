@@ -1,0 +1,30 @@
+name: Evening A-Share Push
+
+on:
+  schedule:
+    # 北京时间 16:35 = UTC时间 8:35
+    - cron: '35 8 * * *'
+  workflow_dispatch: # 允许手动点击测试
+
+jobs:
+  run_evening_analysis:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.9'
+
+      - name: Install dependencies
+        # 安装了 pandas 和 akshare
+        run: pip install akshare pandas requests
+
+      - name: Run Evening Script
+        env:
+          # 
+          SERVERCHAN_KEY: ${{ secrets.SERVERCHAN_KEY }}
+          TZ: Asia/Shanghai
+        run: python evening_push.py
